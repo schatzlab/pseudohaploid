@@ -367,7 +367,10 @@ foreach my $ctg (sort {$contigs{$a}->{len} <=> $contigs{$b}->{len}} keys %contig
   }
 }
 
-print STDERR "Found $totaledges total edges [$constructtime constructtime, $searchtime searchtime, $stackadd stackadd]\n";
+my $constructtimep = sprintf("%.3f", $constructtime);
+my $searchtimep    = sprintf("%.3f", $searchtime);
+
+print STDERR "Found $totaledges total edges [$constructtimep constructtime, $searchtimep searchtime, $stackadd stackadd]\n";
 
 
 
