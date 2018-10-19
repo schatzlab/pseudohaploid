@@ -13,15 +13,15 @@ Briefly, the algorithm begins by aligning the genome assembly to itself using th
 
 Next, the alignments were examined to identify and filter out redundant homologous contigs. We do so by linking the individual alignments into “alignment chains”, consisting of sets of alignments that are co-linear along the pair of contigs. Our method was inspired by older methods for computing synteny between distantly related genomes, although our method focuses on the problem of identifying homologous contig pairs as high identity long alignment chains. As we expect there to be structural variations between the homologous sequences, we allow for gaps in the alignments between the contigs, although true homologous contig pairs should maintain a consistent order and orientation to the alignments. Specifically, in the alignments from contig A to contig B, each aligned region of A forms a node in an alignment graph, and edges are added between nodes if they are compatible alignments, meaning they are on the same strand, and the implied gap distance on both contig A and contig B was less than 25kbp but not negative. Our algorithm then uses a depth first search starting at every node in the alignment graph to find the highest scoring chain of alignments, where the score is determined by the number of bases that are aligned in the chain. Notably, if a repetitive alignment is flanked by unique or repetitive alignments, such as the orange sequence in Contig B below, this approach will prefer to link alignments that are co-linear on Contig A. We find this produces better results than the filtering that MUMmer’s delta-filter can perform, which does not consider the context of the alignments when identifying a candidate set of non-redundant set of alignments. 
 
- 
-![AlignmentChain](img/AlignmentChain.png)
+<img src="https://raw.githubusercontent.com/schatzlab/pseudohaploid/master/img/AlignmentChain.png" width="600" height="400" align="center">
+
 
 **Alignment Chain Construction** (a) Pairwise alignments between all contigs are computed with nucmer. Here we show just the alignments between contigs A and B. (b) An alignment graph is computed where each aligned region of A forms a node, with edges between nodes that are compatible on the same strand, in the same order, and no more than 25kbp between them. (c) The final alignment chain is selected from the alignment graph as the maximal weight path in the alignment graph.
 
 
 With the alignment chains identified between pairs of contigs, the last phase of the algorithm is to remove any contigs that are redundant with other contigs originating on the homologous chromosome. Specifically, it evaluates the contigs in order from smallest to longest, and computes the fraction of the bases of each contig that are spanned by alignment chains to other non-redundant contigs. If more than X% of the contig is spanned, it is marked as redundant. This can occur in simple cases where shorter contigs are spanned by individual longer contigs as well as more complex cases where a contig is spanned by multiple shorter non-redundant contigs. We recommmend you evaluate several cutoffs for the threshold of percent of the bases spanned.
 
-![ChainFiltering](img/ChainFiltering.png)
+<img src="https://raw.githubusercontent.com/schatzlab/pseudohaploid/master/img/ChainFiltering.png" width="600" height="400" align="center">
 
 **Chain Filtering** (a) In simple cases, short contigs (contig A) are filtering out by their alignment chains to longer non-redundant contigs (contig B). (b) In complex cases, a contig (contig B) is filtered out because the total span of the alignment chains to multiple non-redundant contigs (contigs A and C) span more than X% of the bases.
 
