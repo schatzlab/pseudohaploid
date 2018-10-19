@@ -42,14 +42,14 @@ There is nothing else to install.
 
 The main script to run is `create_pseudohaploid.sh`. This is a simple bash script to simplify the steps of aligning the genome to itself, filtering the alignments, constructing and analyzing the alignment chains, and then creating the final pseudohaploid assembly. The usage is:
 
-`
+```
   $ create_pseudohaploid.sh assembly.fa outprefix
-`
+```
 
 
 The test directory has a smalll script to run this comman on a small simple example. If everything is working well you should see:
 
-` 
+``` 
   $ cd test
   $ ./run_tests.sh
   Running the simple example
@@ -83,6 +83,6 @@ The test directory has a smalll script to run this comman on a small simple exam
 
   6. Creating final pseudohaploid assembly in ph.simple.pseudohap.fa
   Pseudohaploid assembly has 1 contigs
-`
+```
 
 Note the `create_pseudohaploid.sh` script is just a simple bash script so can be easily editing or incorporated into a larger pipeline. You can also swap out steps, such as replacing nucmer with sge_mummer to use a grid to compute the self alignments.
