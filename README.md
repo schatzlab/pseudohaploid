@@ -1,5 +1,7 @@
 # pseudohaploid
-Code for creating pseudohaploid assemblies from a partial resolved diploid assembly
+Create pseudohaploid assemblies from a partially resolved diploid assembly
+
+[Mike Alonge](http://michaelalonge.com/), [Srividya Ramakrishnan](https://github.com/srividya22), and [Michael C. Schatz](http://schatz-lab.org)
 
 When assembling highly heterozygous genomes, the total span of the assembly is often nearly twice the expected (haploid) genome size, which is indicative of the assembler partially resolving the heterozygosity. This creates many duplicated genes and other duplicated features that can complicate annotation and comparative genomics. This repository contains code for post-processing an assembly to create a pseudo-haploid representation where pairs of contigs representing the same homologous sequence were filtered to select only one representative contig. The approach is similar to the approach used by [FALCON-unzip](https://www.nature.com/articles/nmeth.4035) for PacBio reads or [SuperNova](https://genome.cshlp.org/content/27/5/757) for 10X Genomics Linked Reads. As with those algorithms, our algorithm will not necessarily maintain the same phase throughout the assembly, and can arbitrarily alternate between homologous chromosomes at the ends of contigs. Unlike those methods, our method can be run as a stand-alone tool with any assembler.
 
@@ -24,5 +26,63 @@ With the alignment chains identified between pairs of contigs, the last phase of
 **Chain Filtering** (a) In simple cases, short contigs (contig A) are filtering out by their alignment chains to longer non-redundant contigs (contig B). (b) In complex cases, a contig (contig B) is filtered out because the total span of the alignment chains to multiple non-redundant contigs (contigs A and C) span more than X% of the bases.
 
 
+## Installation
+
+Make sure [MUMmer](http://mummer.sourceforge.net/) is installed and the binaries are in your path. We recommend version 3.23 although others may work. 
+
+Then download the pseudohaploid code:
+
+`
+ $ git clone https://github.com/schatzlab/pseudohaploid.git
+`
+
+There is nothing else to install.
+
 ## Usage
 
+The main script to run is `create_pseudohaploid.sh`. This is a simple bash script to simplify the steps of aligning the genome to itself, filtering the alignments, constructing and analyzing the alignment chains, and then creating the final pseudohaploid assembly. The usage is:
+
+`
+  $ create_pseudohaploid.sh assembly.fa outprefix
+`
+
+
+The test directory has a smalll script to run this comman on a small simple example. If everything is working well you should see:
+
+` 
+  $ cd test
+  $ ./run_tests.sh
+  Running the simple example
+  Generating pseudohaploid genome sequence
+  ----------------------------------------
+  GENOME: simple.fa
+  OUTPREFIX: ph.simple
+  MIN_IDENTITY: 90
+  MIN_LENGTH: 1000
+  MIN_CONTAIN: 93
+  MAX_CHAIN_GAP: 20000
+
+  1. Aligning simple.fa to itself with nucmer
+  Original assembly has 2 contigs
+
+  2. Filter for alignments longer than 1000 bp and below 90 identity
+
+  3. Generating coords file
+
+  4. Identifying alignment chains: min_id: 90 min_contain: 93 max_gap: 20000
+  Processing coords file (ph.simple.filter.coords)...
+  Processed 6 alignment records [4 valid]
+  Finding chains for 2 contigs...
+  Found 2 total edges [0.000 constructtime, 0.000 searchtime, 4 stackadd]
+  Looking for contained contigs...
+  Found 1 joint contained contigs
+  Printed 1 total contained contigs
+
+  5. Generating a list of redundant contig ids using min_contain: 93
+  Identified 1 redundant contig to remove in ph.simple.contained.ids
+
+  6. Creating final pseudohaploid assembly in ph.simple.pseudohap.fa
+  Pseudohaploid assembly has 1 contigs
+`
+
+Note the `create_pseudohaploid.sh` script is just a simple bash script so can be easily editing or incorporated into a larger pipeline. You can also swap out steps, such as replacing nucmer with sge_mummer to use a grid to compute the self alignments.
