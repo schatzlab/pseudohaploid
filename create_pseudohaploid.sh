@@ -39,7 +39,8 @@ $BIN/pseudohaploid.chains.pl $PREFIX.filter.coords $MIN_IDENTITY $MIN_CONTAIN > 
 
 ## Generate a list of contained contigs
 ## This can also be rerun from the same chain file but using different containment thresholds
-grep '^#' $PREFIX.chains | awk -v cut=$MIN_CONTAIN '{if ($4 >= cut){print ">"$2}' > $PREFIX.contained.id
+grep '^#' $PREFIX.chains | \
+  awk -v cut=$MIN_CONTAIN '{if ($4 >= cut){print ">"$2}}' > $PREFIX.contained.ids
 
 ## Finally filter the original assembly to remove the contained contigs
-$BIN/filter_seq -v $PREFIX.contained.ids $GENOME > $PREFIX.filtered.fa
+$BIN/filter_seq -v $PREFIX.contained.ids $GENOME > $PREFIX.pseudohap.fa
