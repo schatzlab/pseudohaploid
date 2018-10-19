@@ -2,16 +2,15 @@
 use strict;
 use Time::HiRes qw/gettimeofday/;
 
-#open COORDS, "show-coords -rclH $delta |" 
-#  or die "Can't run show-coords -rclH $delta\n";
+## Generate coords file like this:
+## show-coords -rclH file.delta > file.coords
 
-my $USAGE = "pseudohaploid.chains.pl coords_file min_perc_id min_perc_cov > redundant.list\n";
+my $USAGE = "pseudohaploid.chains.pl coords_file min_perc_id min_perc_cov max_chain_gap > redundant.list\n";
 
-my $coordsfile   = shift @ARGV or die $USAGE;
-my $MIN_PERC_ID  = shift @ARGV or die $USAGE;
-my $MIN_PERC_COV = shift @ARGV or die $USAGE;
-
-my $MAX_CHAIN_DIST = 20000;
+my $coordsfile     = shift @ARGV or die $USAGE;
+my $MIN_PERC_ID    = shift @ARGV or die $USAGE;
+my $MIN_PERC_COV   = shift @ARGV or die $USAGE;
+my $MAX_CHAIN_DIST = shift @ARGV or die $USAGE;
 
 my $VERBOSE = 1;
 my $PATHVERBOSE = 0;
