@@ -1,0 +1,157 @@
+#!/usr/bin/env perl 
+use warnings;
+use strict;
+use FileHandle;
+
+my $USAGE = "Usage: filter_seq [-index seq.fa] [-v] subset.fa all.fa\n";
+
+my $HELPTEXT = qq~
+Extract specified fasta records listed in subset.fa from a master file all.fa. 
+If available, use the index file all.fa.idx to allow random access. Create the index file
+by running 'filter_seq -index all.fa'.
+
+  $USAGE
+
+  Options
+  -------
+  -index Create an index file of the fasta file\n
+  -v     skip everything listed in the subset.fa file\n
+~;
+
+
+my $createindex = 0;
+my $skiplisted = 0;
+
+my $good = shift @ARGV or die $USAGE;
+
+if ($good eq "-help")
+{
+  die $HELPTEXT;
+}
+elsif ($good eq "-index")
+{
+  $createindex = 1;
+  $good = shift @ARGV or die $USAGE;
+}
+elsif ($good eq "-v")
+{
+  $skiplisted = 1;
+  $good = shift @ARGV or die $USAGE;
+  print STDERR "Skipping everything listed in $good\n";
+}
+
+
+if ($createindex)
+{
+  my $orig = new FileHandle "$good", "<"
+    or die("Can't open $good ($!)");
+
+  open IDX, "> $good.idx"
+    or die("Can't open $good.idx ($!)");
+
+  while (!$orig->eof())
+  {
+    my $pos = $orig->tell();
+    my $line = $orig->getline();
+
+    if ($line =~ /^\>(\S+)/)
+    {
+      print IDX "$1 $pos\n";
+    }
+  }
+
+  close IDX;
+}
+else
+{
+  my $copy = shift @ARGV or die $USAGE;
+
+  my %sequencelist;
+
+  ## Find the seqnames from the good list
+  open GOOD, "< $good" 
+    or die("Could't open $good ($!)");
+
+  while (<GOOD>)
+  {
+    if (/^\#(\S+)\(/ || /^\>(\S+)/)
+    {
+      $sequencelist{$1} = 1;
+    }
+  }
+  close GOOD;
+
+  if ((!$skiplisted) && (-r "$copy.idx"))
+  {
+    ## Create the index as: grep -b '>' tvg2.qual | tr -d ':' | tr  '>' ' ' | awk '{print $2" "$1}' > tvg2.qual.idx
+    my %offsettable;
+
+    open IDX, "< $copy.idx" 
+      or die("Couldnt open $copy.idx ($!)");
+
+    while (<IDX>)
+    {
+      my @val = split / /, $_;
+
+      $offsettable{$val[0]} = $val[1]
+        if (exists $sequencelist{$val[0]});
+    }
+    close IDX;
+
+
+    my $copy = new FileHandle "$copy", "r" 
+      or die("Couldnt open $copy ($!)");
+
+    foreach my $seqname (keys %sequencelist)
+    {
+      if (exists $offsettable{$seqname})
+      {
+        $sequencelist{$seqname} = 0;
+
+        $copy->seek($offsettable{$seqname}, 0);
+
+        ## Print the headerline for sure
+        my $line = $copy->getline();
+        print $line;
+
+        ## loop until next record
+        $line = $copy->getline();
+        while ($line !~ /^>/)
+        {
+          print $line;
+          last if $copy->eof();
+          $line = $copy->getline();
+        } 
+      }
+    }
+  }
+  else
+  {
+    ## Pull the sequences out of the copy file
+    my $printid = 0;
+
+    open COPY, "< $copy" 
+      or die("Couldnt open $copy ($!)");
+
+    while (<COPY>)
+    {
+      if (/^\>(\S+)/)
+      {
+        $printid = $sequencelist{$1};
+        if ($skiplisted) { $printid = !$printid; }
+        $sequencelist{$1} = 0;
+      }
+
+      print $_ if $printid;
+    }
+
+    close COPY;
+  }
+
+  ## Make sure we found each id
+  foreach my $seqname (keys %sequencelist)
+  {
+    print STDERR "$seqname in $good but not in $copy"
+      if ($sequencelist{$seqname});
+  }
+}
