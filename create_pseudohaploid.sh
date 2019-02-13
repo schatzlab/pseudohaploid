@@ -66,7 +66,7 @@ echo
 echo "5. Generating a list of redundant contig ids using min_contain: $MIN_CONTAIN"
 grep '^#' $PREFIX.chains | \
   awk -v cut=$MIN_CONTAIN '{if ($4 >= cut){print ">"$2}}' > $PREFIX.contained.ids
-numcontained=`wc -l ph.simple.contained.ids | awk '{print $1}'`
+numcontained=`wc -l $PREFIX.contained.ids | awk '{print $1}'`
 echo "Identified $numcontained redundant contig to remove in $PREFIX.contained.ids"
 echo
 
