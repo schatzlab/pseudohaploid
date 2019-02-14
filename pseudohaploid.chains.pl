@@ -1,6 +1,5 @@
 #!/usr/bin/perl -w
 use strict;
-use Time::HiRes qw/gettimeofday/;
 
 ## Generate coords file like this:
 ## show-coords -rclH file.delta > file.coords
@@ -134,7 +133,7 @@ foreach my $ctg (sort {$contigs{$a}->{len} <=> $contigs{$b}->{len}} keys %contig
           }
 
           ## Find all of the compatible edges
-          $lasttime = gettimeofday;
+          $lasttime = time();
           for (my $i = 0; $i < scalar @align; $i++)
           {
             for (my $j = 0; $j < $i; $j++)
@@ -194,7 +193,7 @@ foreach my $ctg (sort {$contigs{$a}->{len} <=> $contigs{$b}->{len}} keys %contig
                }
             }
           }
-          $constructtime += (gettimeofday - $lasttime);
+          $constructtime += (time() - $lasttime);
 
           if ($PATHVERBOSE)
           {
@@ -213,7 +212,7 @@ foreach my $ctg (sort {$contigs{$a}->{len} <=> $contigs{$b}->{len}} keys %contig
           }
 
           ## find the longest chain starting at each node (if not already visited)
-          $lasttime = gettimeofday;
+          $lasttime = time();
           for (my $i = 0; $i < scalar @align; $i++)
           {
             next if exists $align[$i]->{visit};
@@ -317,7 +316,7 @@ foreach my $ctg (sort {$contigs{$a}->{len} <=> $contigs{$b}->{len}} keys %contig
               $bestpathall = $bestpathi;
             }
           }
-          $searchtime += (gettimeofday - $lasttime);
+          $searchtime += (time() - $lasttime);
         }
       }
             
@@ -367,8 +366,8 @@ foreach my $ctg (sort {$contigs{$a}->{len} <=> $contigs{$b}->{len}} keys %contig
   }
 }
 
-my $constructtimep = sprintf("%.3f", $constructtime);
-my $searchtimep    = sprintf("%.3f", $searchtime);
+my $constructtimep = sprintf("%d", $constructtime);
+my $searchtimep    = sprintf("%d", $searchtime);
 
 print STDERR "Found $totaledges total edges [$constructtimep constructtime, $searchtimep searchtime, $stackadd stackadd]\n";
 
