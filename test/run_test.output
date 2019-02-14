@@ -1,0 +1,72 @@
+Running the simple example
+===============================================================
+Generating pseudohaploid genome sequence
+----------------------------------------
+GENOME: simple.fa
+OUTPREFIX: ph.simple
+MIN_IDENTITY: 90
+MIN_LENGTH: 1000
+MIN_CONTAIN: 93
+MAX_CHAIN_GAP: 20000
+
+1. Aligning simple.fa to itself with nucmer
+Original assembly has 2 contigs
+
+2. Filter for alignments longer than 1000 bp and below 90 identity
+
+3. Generating coords file
+
+4. Identifying alignment chains: min_id: 90 min_contain: 93 max_gap: 20000
+Processing coords file (ph.simple.filter.coords)...
+Processed 6 alignment records [4 valid]
+Finding chains for 2 contigs...
+Found 2 total edges [0.000 constructtime, 0.000 searchtime, 4 stackadd]
+Looking for contained contigs...
+Found 1 joint contained contigs
+Printed 1 total contained contigs
+
+5. Generating a list of redundant contig ids using min_contain: 93
+Identified 1 redundant contig to remove in ph.simple.contained.ids
+
+6. Creating final pseudohaploid assembly in ph.simple.pseudohap.fa
+Pseudohaploid assembly has 1 contigs
+
+This should report: Pseudohaploid assembly has 1 contigs
+===============================================================
+
+
+Running the basic example
+===============================================================
+Generating pseudohaploid genome sequence
+----------------------------------------
+GENOME: basic.fa
+OUTPREFIX: ph.basic
+MIN_IDENTITY: 90
+MIN_LENGTH: 1000
+MIN_CONTAIN: 93
+MAX_CHAIN_GAP: 20000
+
+1. Aligning basic.fa to itself with nucmer
+Original assembly has 4 contigs
+
+2. Filter for alignments longer than 1000 bp and below 90 identity
+
+3. Generating coords file
+
+4. Identifying alignment chains: min_id: 90 min_contain: 93 max_gap: 20000
+Processing coords file (ph.basic.filter.coords)...
+Processed 8 alignment records [4 valid]
+Finding chains for 4 contigs...
+Found 2 total edges [0.000 constructtime, 0.000 searchtime, 4 stackadd]
+Looking for contained contigs...
+Found 1 joint contained contigs
+Printed 1 total contained contigs
+
+5. Generating a list of redundant contig ids using min_contain: 93
+Identified 1 redundant contig to remove in ph.basic.contained.ids
+
+6. Creating final pseudohaploid assembly in ph.basic.pseudohap.fa
+Pseudohaploid assembly has 3 contigs
+
+This should report: Pseudohaploid assembly has 3 contigs
+===============================================================
