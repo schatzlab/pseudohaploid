@@ -5,12 +5,15 @@ set -o pipefail
 BIN="$( cd "$(dirname "$0")" ; pwd -P )"
 
 ## Minimum alignment Identity
+#MIN_IDENTITY=95
 MIN_IDENTITY=90
 
 ## Minimum alignment length to consider
+#MIN_LENGTH=10000
 MIN_LENGTH=1000
 
 ## Minimum containment percentage from overlap chains to filter contig
+#MIN_CONTAIN=95
 MIN_CONTAIN=93
 
 ## Maximum distance in bp allowed between alignments on the same alignment chain
@@ -37,11 +40,14 @@ echo
 
 ## You may want to replace this with sge_mummer for large genomes
 ## See: https://github.com/fritzsedlazeck/sge_mummer
-echo "1. Aligning $GENOME to itself with nucmer"
-(nucmer --maxmatch -c 100 -l 500 $GENOME $GENOME -p $PREFIX) >& nucmer.log
-numorig=`grep -c '^>' $GENOME`
-echo "Original assembly has $numorig contigs"
-echo
+if [ ! -r $PREFIX.delta ]
+then
+  echo "1. Aligning $GENOME to itself with nucmer"
+  (nucmer --maxmatch -c 100 -l 500 $GENOME $GENOME -p $PREFIX) >& nucmer.log
+  numorig=`grep -c '^>' $GENOME`
+  echo "Original assembly has $numorig contigs"
+  echo
+fi
 
 ## Pre-filter for just longer high identity alignments
 echo "2. Filter for alignments longer than $MIN_LENGTH bp and below $MIN_IDENTITY identity"
