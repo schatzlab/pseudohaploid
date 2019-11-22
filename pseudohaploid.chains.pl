@@ -31,30 +31,34 @@ while (<COORDS>)
   if (($alignments % 10000) == 0) { print STDERR "  processed $alignments alignments\n"; }
 
   chomp;
+  $_ =~ s/^\s+//;
   my @vals = split /\s+/, $_;
 
-  my $rstart = $vals[1];
-  my $rend   = $vals[2];
+  my $rstart = $vals[0];
+  my $rend   = $vals[1];
 
-  my $qstart = $vals[4];
-  my $qend   = $vals[5];
+  my $qstart = $vals[3];
+  my $qend   = $vals[4];
 
   my $qoo    = "F";
   if ($qstart > $qend) { $qoo = "R" };
 
-  my $alenr = $vals[7];
-  my $alenq = $vals[8];
+  my $alenr = $vals[6];
+  my $alenq = $vals[7];
 
-  my $pid  = $vals[10];
+  my $pid  = $vals[9];
 
-  my $lenr = $vals[12];
-  my $lenq = $vals[13];
+  my $lenr = $vals[11];
+  my $lenq = $vals[12];
 
-  my $rid  = $vals[18];
-  my $qid  = $vals[19];
+  my $rid  = $vals[17];
+  my $qid  = $vals[18];
 
   $contigs{$rid}->{len} = $lenr;
   $contigs{$qid}->{len} = $lenq;
+
+  #print "$_\n";
+  #print "$rid $qid | $rstart $rend $lenr | $qstart $qend $qoo $lenq | $alenr\n";
 
   next if ($pid < $MIN_PERC_ID);
   next if ($rid eq $qid);
